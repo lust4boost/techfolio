@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Import Flask and a helper function for JSON responses
 from flask import Flask, jsonify
 
