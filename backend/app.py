@@ -1,49 +1,35 @@
-##########################
-# Import Flask functuion #
-##########################
+#########################
+# Import Flask & OpenAI #
+#########################
 
-# Import Flask and a helper function for JSON responses
-from flask import Flask, jsonify
-
-# Import CORS
+from flask import Flask, jsonify, request  # Added `request` import
 from flask_cors import CORS
-
-# Enable CORS for the Flask app
-CORS(app)
-
-# Create a Flask app instance
-app = Flask(__name__)
-
-# Define a route (URL) and its corresponding function
-@app.route('/api/test', methods=['GET'])
-def test_route():
-    return jsonify({"message": "This is a test route!"})
-
-# Run the app in development mode
-if __name__ == '__main__':
-    app.run(debug=True)
-
-
-
-######################################
-# Openai Route for Resume Generation #
-######################################
-
-# Import the OpenAI library
-import openai 
-
-# Set your OpenAI API key
+import openai
 import os
 from dotenv import load_dotenv
 
+
+
+############################
+# Flask App Initialization #
+############################
+
+app = Flask(__name__)
+CORS(app)
+
+# Load OpenAI API Key from .env
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
-# Parse the input data from the frontend
+
+######################################
+# OpenAI Route for Resume Generation #
+######################################
+
 @app.route('/api/generate-resume', methods=['POST'])
 def generate_resume():
-    data = request.json
+    data = request.json  # Fixed request parsing
     name = data.get('name', 'Unknown Candidate')
     skills = data.get('skills', 'No skills provided')
     experience = data.get('experience', 'No experience provided')
@@ -67,4 +53,17 @@ def generate_resume():
         return jsonify({"resume": resume})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
 
+
+##################################
+# Default Route for Health Check #
+##################################
+
+@app.route('/')
+def home():
+    return jsonify({"message": "Backend is running!"})
+
+# ✅ Ensure this is placed at the end
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=5000)
